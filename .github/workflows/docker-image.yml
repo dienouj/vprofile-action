@@ -1,0 +1,26 @@
+name: Delete KMS Key
+
+on:
+  workflow_dispatch: # Permet de lancer le workflow manuellement
+
+jobs:
+  delete-kms:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # inclure uniquement si tu utilises un token temporaire
+          aws-region: us-east-1
+
+      - name: Vérifier l'identité AWS
+        run: aws sts get-caller-identity
+
+      - name: Planifier la suppression de la clé KMS
+        run: |
+          aws kms schedule-key-deletion \
+            --key-id 2b761c20-e914-418d-bd01-8b1d13eb345a \
+            --pending-window-in-days 7
